@@ -1,0 +1,3 @@
+-- PostgreSQL schema (will be filled in Step 3)
+-- Keep monetary values as NUMERIC(38,18)
+-- Use partitioning for hourly/daily tables
