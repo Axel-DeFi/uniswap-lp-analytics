@@ -1,5 +1,5 @@
 import { Address, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
-import { Pool, Token, PoolDayData } from "../../generated/schema";
+import { Pool, Token, PoolDayData, PoolHourData } from "../../generated/schema";
 import { PoolCreated } from "../../generated/UniswapV3Factory/UniswapV3Factory";
 import { ERC20 } from "../../generated/UniswapV3Factory/ERC20";
 
@@ -41,6 +41,21 @@ function ensurePoolDayData(poolId: string, ts: BigInt): void {
   }
 }
 
+function ensurePoolHourData(poolId: string, ts: BigInt): void {
+  const hourId = ts.toI32() / 3600; // UTC hour
+  const id = poolId + "-" + hourId.toString();
+  let phd = PoolHourData.load(id);
+  if (phd == null) {
+    phd = new PoolHourData(id);
+    phd.pool = poolId;
+    phd.hourStartUnix = hourId;
+    phd.volumeUSD = BigDecimal.fromString("0");
+    phd.feesUSD = BigDecimal.fromString("0");
+    phd.tvlUSD = BigDecimal.fromString("0");
+    phd.save();
+  }
+}
+
 export function handlePoolCreated(event: PoolCreated): void {
   const poolId = event.params.pool.toHex().toLowerCase();
 
@@ -57,6 +72,6 @@ export function handlePoolCreated(event: PoolCreated): void {
   pool.createdAtTimestamp = event.block.timestamp;
   pool.save();
 
-  // Create an empty daily slice for the creation day
   ensurePoolDayData(poolId, event.block.timestamp);
+  ensurePoolHourData(poolId, event.block.timestamp);
 }
