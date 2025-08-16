@@ -34,6 +34,9 @@ function ensurePoolDayData(poolId: string, ts: BigInt): void {
     pdd = new PoolDayData(id);
     pdd.pool = poolId;
     pdd.date = dayId;
+    pdd.volumeToken0 = BigDecimal.fromString("0");
+    pdd.volumeToken1 = BigDecimal.fromString("0");
+    pdd.swapCount = 0;
     pdd.volumeUSD = BigDecimal.fromString("0");
     pdd.feesUSD = BigDecimal.fromString("0");
     pdd.tvlUSD = BigDecimal.fromString("0");
@@ -49,6 +52,9 @@ function ensurePoolHourData(poolId: string, ts: BigInt): void {
     phd = new PoolHourData(id);
     phd.pool = poolId;
     phd.hourStartUnix = hourId;
+    phd.volumeToken0 = BigDecimal.fromString("0");
+    phd.volumeToken1 = BigDecimal.fromString("0");
+    phd.swapCount = 0;
     phd.volumeUSD = BigDecimal.fromString("0");
     phd.feesUSD = BigDecimal.fromString("0");
     phd.tvlUSD = BigDecimal.fromString("0");

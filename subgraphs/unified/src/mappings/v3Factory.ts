@@ -2,6 +2,7 @@ import { Address, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
 import { Pool, Token, PoolDayData, PoolHourData } from "../../generated/schema";
 import { PoolCreated } from "../../generated/UniswapV3Factory/UniswapV3Factory";
 import { ERC20 } from "../../generated/UniswapV3Factory/ERC20";
+import { UniswapV3Pool as UniswapV3PoolTemplate } from "../../generated/templates";
 
 function getOrCreateToken(addr: Address, chainId: i32, ts: BigInt): string {
   const id = addr.toHex().toLowerCase();
@@ -34,6 +35,9 @@ function ensurePoolDayData(poolId: string, ts: BigInt): void {
     pdd = new PoolDayData(id);
     pdd.pool = poolId;
     pdd.date = dayId;
+    pdd.volumeToken0 = BigDecimal.fromString("0");
+    pdd.volumeToken1 = BigDecimal.fromString("0");
+    pdd.swapCount = 0;
     pdd.volumeUSD = BigDecimal.fromString("0");
     pdd.feesUSD = BigDecimal.fromString("0");
     pdd.tvlUSD = BigDecimal.fromString("0");
@@ -49,6 +53,9 @@ function ensurePoolHourData(poolId: string, ts: BigInt): void {
     phd = new PoolHourData(id);
     phd.pool = poolId;
     phd.hourStartUnix = hourId;
+    phd.volumeToken0 = BigDecimal.fromString("0");
+    phd.volumeToken1 = BigDecimal.fromString("0");
+    phd.swapCount = 0;
     phd.volumeUSD = BigDecimal.fromString("0");
     phd.feesUSD = BigDecimal.fromString("0");
     phd.tvlUSD = BigDecimal.fromString("0");
@@ -74,4 +81,7 @@ export function handlePoolCreated(event: PoolCreated): void {
 
   ensurePoolDayData(poolId, event.block.timestamp);
   ensurePoolHourData(poolId, event.block.timestamp);
+
+  // Start indexing this pool's swaps via template
+  UniswapV3PoolTemplate.create(event.params.pool);
 }

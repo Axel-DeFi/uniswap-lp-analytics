@@ -16,6 +16,8 @@ dataSources:
       entities:
         - Pool
         - Token
+        - PoolDayData
+        - PoolHourData
       abis:
         - name: UniswapV3Factory
           file: UniswapV3Factory/UniswapV3Factory.json
@@ -38,6 +40,8 @@ dataSources:
       entities:
         - Pool
         - Token
+        - PoolDayData
+        - PoolHourData
       abis:
         - name: PoolManager
           file: PoolManager/PoolManager.json
@@ -47,3 +51,24 @@ dataSources:
         - event: Initialize(indexed bytes32,indexed address,indexed
             address,uint24,int24,address,uint160,int24)
           handler: handleInitialize
+templates:
+  - kind: ethereum/contract
+    name: UniswapV3Pool
+    network: mainnet
+    source:
+      abi: UniswapV3Pool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: templates/UniswapV3Pool/UniswapV3Pool.wasm
+      entities:
+        - Pool
+        - PoolDayData
+        - PoolHourData
+      abis:
+        - name: UniswapV3Pool
+          file: UniswapV3Pool/UniswapV3Pool.json
+      eventHandlers:
+        - event: Swap(indexed address,indexed address,int256,int256,uint160,uint128,int24)
+          handler: handleSwap

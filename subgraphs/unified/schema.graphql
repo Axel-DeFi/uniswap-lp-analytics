@@ -13,19 +13,35 @@ type Pool @entity(immutable: false) {
   id: ID!                       # V3: pool address; V4: bytes32 pool id
   version: Int!                 # 3 or 4
   chainId: Int!                 # 1 for Ethereum mainnet in this step
-  token0: Token!                # relation to Token
-  token1: Token!                # relation to Token
-  feeTierBps: Int!              # uint24
-  tickSpacing: Int!             # int24
+  token0: Token!
+  token1: Token!
+  feeTierBps: Int!
+  tickSpacing: Int!
   createdAtTimestamp: BigInt!
 }
 
-# Daily slice per pool. We'll fill metrics later (for now zeros).
+# Daily slice per pool (token volumes for now; USD later).
 type PoolDayData @entity(immutable: false) {
   id: ID!                       # "<poolId>-<dayId>"
   pool: Pool!
   date: Int!                    # dayId = timestamp / 86400 (UTC)
-  volumeUSD: BigDecimal!        # initialized to 0
-  feesUSD: BigDecimal!          # initialized to 0
-  tvlUSD: BigDecimal!           # initialized to 0
+  volumeToken0: BigDecimal!     # token units
+  volumeToken1: BigDecimal!     # token units
+  swapCount: Int!
+  volumeUSD: BigDecimal!        # placeholder (0 for now)
+  feesUSD: BigDecimal!          # placeholder (0 for now)
+  tvlUSD: BigDecimal!           # placeholder (0 for now)
+}
+
+# Hourly slice per pool.
+type PoolHourData @entity(immutable: false) {
+  id: ID!                       # "<poolId>-<hourId>"
+  pool: Pool!
+  hourStartUnix: Int!           # hourId = timestamp / 3600 (UTC)
+  volumeToken0: BigDecimal!
+  volumeToken1: BigDecimal!
+  swapCount: Int!
+  volumeUSD: BigDecimal!        # placeholder (0 for now)
+  feesUSD: BigDecimal!          # placeholder (0 for now)
+  tvlUSD: BigDecimal!           # placeholder (0 for now)
 }
