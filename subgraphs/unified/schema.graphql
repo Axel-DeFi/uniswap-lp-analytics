@@ -1,1 +1,12 @@
-# Will be defined in Step 2 (unified V3/V4 entities)
+# Minimal schema to store newly created pools from Uniswap V3 and V4.
+# We keep Pool mutable because we'll update it over time (TVL, volumes, etc).
+type Pool @entity(immutable: false) {
+  id: ID!
+  version: Int!              # 3 or 4
+  chainId: Int!              # 1 for Ethereum mainnet in this step
+  token0: Bytes!             # raw address
+  token1: Bytes!             # raw address
+  feeTierBps: Int!           # fee in basis points (uint24)
+  tickSpacing: Int!          # int24
+  createdAtTimestamp: BigInt!
+}
