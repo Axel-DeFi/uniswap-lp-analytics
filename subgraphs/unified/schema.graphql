@@ -19,3 +19,13 @@ type Pool @entity(immutable: false) {
   tickSpacing: Int!             # int24
   createdAtTimestamp: BigInt!
 }
+
+# Daily slice per pool. We'll fill metrics later (for now zeros).
+type PoolDayData @entity(immutable: false) {
+  id: ID!                       # "<poolId>-<dayId>"
+  pool: Pool!
+  date: Int!                    # dayId = timestamp / 86400 (UTC)
+  volumeUSD: BigDecimal!        # initialized to 0
+  feesUSD: BigDecimal!          # initialized to 0
+  tvlUSD: BigDecimal!           # initialized to 0
+}

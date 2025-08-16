@@ -1,5 +1,5 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Pool, Token } from "../../generated/schema";
+import { Address, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
+import { Pool, Token, PoolDayData } from "../../generated/schema";
 import { Initialize } from "../../generated/PoolManager/PoolManager";
 import { ERC20 } from "../../generated/PoolManager/ERC20";
 
@@ -26,6 +26,21 @@ function getOrCreateToken(addr: Address, chainId: i32, ts: BigInt): string {
   return id;
 }
 
+function ensurePoolDayData(poolId: string, ts: BigInt): void {
+  const dayId = ts.toI32() / 86400; // UTC day
+  const id = poolId + "-" + dayId.toString();
+  let pdd = PoolDayData.load(id);
+  if (pdd == null) {
+    pdd = new PoolDayData(id);
+    pdd.pool = poolId;
+    pdd.date = dayId;
+    pdd.volumeUSD = BigDecimal.fromString("0");
+    pdd.feesUSD = BigDecimal.fromString("0");
+    pdd.tvlUSD = BigDecimal.fromString("0");
+    pdd.save();
+  }
+}
+
 export function handleInitialize(event: Initialize): void {
   const poolId = event.params.id.toHex().toLowerCase();
 
@@ -41,4 +56,7 @@ export function handleInitialize(event: Initialize): void {
   pool.tickSpacing = event.params.tickSpacing as i32;
   pool.createdAtTimestamp = event.block.timestamp;
   pool.save();
+
+  // Create an empty daily slice for the creation day
+  ensurePoolDayData(poolId, event.block.timestamp);
 }

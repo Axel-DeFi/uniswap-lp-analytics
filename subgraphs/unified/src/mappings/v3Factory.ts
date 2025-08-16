@@ -1,5 +1,5 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Pool, Token } from "../../generated/schema";
+import { Address, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
+import { Pool, Token, PoolDayData } from "../../generated/schema";
 import { PoolCreated } from "../../generated/UniswapV3Factory/UniswapV3Factory";
 import { ERC20 } from "../../generated/UniswapV3Factory/ERC20";
 
@@ -10,7 +10,6 @@ function getOrCreateToken(addr: Address, chainId: i32, ts: BigInt): string {
     token = new Token(id);
     const erc20 = ERC20.bind(addr);
 
-    // Try decimals, symbol, name (with safe fallbacks)
     const dec = erc20.try_decimals();
     token.decimals = dec.reverted ? 18 : (dec.value as i32);
 
@@ -27,6 +26,21 @@ function getOrCreateToken(addr: Address, chainId: i32, ts: BigInt): string {
   return id;
 }
 
+function ensurePoolDayData(poolId: string, ts: BigInt): void {
+  const dayId = ts.toI32() / 86400; // UTC day
+  const id = poolId + "-" + dayId.toString();
+  let pdd = PoolDayData.load(id);
+  if (pdd == null) {
+    pdd = new PoolDayData(id);
+    pdd.pool = poolId;
+    pdd.date = dayId;
+    pdd.volumeUSD = BigDecimal.fromString("0");
+    pdd.feesUSD = BigDecimal.fromString("0");
+    pdd.tvlUSD = BigDecimal.fromString("0");
+    pdd.save();
+  }
+}
+
 export function handlePoolCreated(event: PoolCreated): void {
   const poolId = event.params.pool.toHex().toLowerCase();
 
@@ -36,10 +50,13 @@ export function handlePoolCreated(event: PoolCreated): void {
   let pool = new Pool(poolId);
   pool.version = 3;
   pool.chainId = 1; // Ethereum mainnet in this step
-  pool.token0 = t0; // relation by id
-  pool.token1 = t1; // relation by id
+  pool.token0 = t0;
+  pool.token1 = t1;
   pool.feeTierBps = event.params.fee as i32;
   pool.tickSpacing = event.params.tickSpacing as i32;
   pool.createdAtTimestamp = event.block.timestamp;
   pool.save();
+
+  // Create an empty daily slice for the creation day
+  ensurePoolDayData(poolId, event.block.timestamp);
 }
