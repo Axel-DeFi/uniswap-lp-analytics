@@ -15,6 +15,40 @@ export class ERC20 extends ethereum.SmartContract {
     return new ERC20("ERC20", address);
   }
 
+  balanceOf(owner: Address): BigInt {
+    let result = super.call("balanceOf", "balanceOf(address):(uint256)", [
+      ethereum.Value.fromAddress(owner),
+    ]);
+
+    return result[0].toBigInt();
+  }
+
+  try_balanceOf(owner: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("balanceOf", "balanceOf(address):(uint256)", [
+      ethereum.Value.fromAddress(owner),
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  decimals(): i32 {
+    let result = super.call("decimals", "decimals():(uint8)", []);
+
+    return result[0].toI32();
+  }
+
+  try_decimals(): ethereum.CallResult<i32> {
+    let result = super.tryCall("decimals", "decimals():(uint8)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
+  }
+
   symbol(): string {
     let result = super.call("symbol", "symbol():(string)", []);
 
@@ -43,20 +77,5 @@ export class ERC20 extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toString());
-  }
-
-  decimals(): i32 {
-    let result = super.call("decimals", "decimals():(uint8)", []);
-
-    return result[0].toI32();
-  }
-
-  try_decimals(): ethereum.CallResult<i32> {
-    let result = super.tryCall("decimals", "decimals():(uint8)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toI32());
   }
 }

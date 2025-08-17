@@ -1,41 +1,55 @@
 [
   {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
+    "type": "function",
+    "name": "balanceOf",
+    "stateMutability": "view",
+    "inputs": [
       {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
+        "name": "owner",
+        "type": "address"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
     "outputs": [
       {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
+        "name": "balance",
+        "type": "uint256"
       }
-    ],
-    "stateMutability": "view",
-    "type": "function"
+    ]
   },
   {
-    "inputs": [],
+    "type": "function",
     "name": "decimals",
+    "stateMutability": "view",
+    "inputs": [],
     "outputs": [
       {
-        "internalType": "uint8",
         "name": "",
         "type": "uint8"
       }
-    ],
+    ]
+  },
+  {
+    "type": "function",
+    "name": "symbol",
     "stateMutability": "view",
-    "type": "function"
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "name",
+    "stateMutability": "view",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ]
   }
 ]

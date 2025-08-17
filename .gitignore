@@ -11,3 +11,9 @@ dist/
 # OS / IDE
 .DS_Store
 .vscode/
+
+.env
+*.env
+
+.env
+*.env

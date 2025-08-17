@@ -1,0 +1,181 @@
+{
+  "chainId": 1,
+  "network": "mainnet",
+  "version": "3",
+  "tokens": [
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+  ],
+  "pools": [
+    {
+      "id": "0x1ef1d8866987a3a8f03717a8f34ed59a8e58e8f0",
+      "version": 3,
+      "token0": {
+        "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      "token1": {
+        "id": "0xd4ecd171b283fa7cfe106d16b28956824c4f01d6",
+        "symbol": "USA",
+        "decimals": 18
+      },
+      "feeTierBps": 10000,
+      "tickSpacing": 200,
+      "createdAtTimestamp": "1624228529"
+    },
+    {
+      "id": "0x2c88707e26a5bf2003f343185fe9c24ae35f3688",
+      "version": 3,
+      "token0": {
+        "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "symbol": "USDC",
+        "decimals": 6
+      },
+      "token1": {
+        "id": "0xbc6da0fe9ad5f3b0d58160288917aa56653660e9",
+        "symbol": "alUSD",
+        "decimals": 18
+      },
+      "feeTierBps": 500,
+      "tickSpacing": 10,
+      "createdAtTimestamp": "1624147734"
+    },
+    {
+      "id": "0x330c461cee0c94beafb1e4e852056d61a78f012a",
+      "version": 3,
+      "token0": {
+        "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      "token1": {
+        "id": "0xd3fa5bf414919f9dc5e24f375c62c1d5108e33da",
+        "symbol": "EDCC",
+        "decimals": 18
+      },
+      "feeTierBps": 500,
+      "tickSpacing": 10,
+      "createdAtTimestamp": "1624199455"
+    },
+    {
+      "id": "0x7169ff7e7b3836534f20404cc5c7af4769dd4ce4",
+      "version": 3,
+      "token0": {
+        "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "symbol": "USDC",
+        "decimals": 6
+      },
+      "token1": {
+        "id": "0xf4fe95603881d0e07954fd7605e0e9a916e42c44",
+        "symbol": "WHEN",
+        "decimals": 18
+      },
+      "feeTierBps": 10000,
+      "tickSpacing": 200,
+      "createdAtTimestamp": "1624252594"
+    },
+    {
+      "id": "0x7181bcaf9626abca2e5dd75053e5c60685c2a77e",
+      "version": 3,
+      "token0": {
+        "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      "token1": {
+        "id": "0xf938424f7210f31df2aee3011291b658f872e91e",
+        "symbol": "VISR",
+        "decimals": 18
+      },
+      "feeTierBps": 10000,
+      "tickSpacing": 200,
+      "createdAtTimestamp": "1624149247"
+    },
+    {
+      "id": "0x7379e81228514a1d2a6cf7559203998e20598346",
+      "version": 3,
+      "token0": {
+        "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      "token1": {
+        "id": "0xfe2e637202056d30016725477c5da089ab0a043a",
+        "symbol": "sETH2",
+        "decimals": 18
+      },
+      "feeTierBps": 3000,
+      "tickSpacing": 60,
+      "createdAtTimestamp": "1624225823"
+    },
+    {
+      "id": "0x97ae48ce13621caba175ba2da9725a05be6d5512",
+      "version": 3,
+      "token0": {
+        "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      "token1": {
+        "id": "0xe1da804f52504be6b09b190c279f0a7d8c033e22",
+        "symbol": "DOGEMON",
+        "decimals": 18
+      },
+      "feeTierBps": 3000,
+      "tickSpacing": 60,
+      "createdAtTimestamp": "1624285104"
+    },
+    {
+      "id": "0xa6102d2cece8df0350fecd2261d2c09074182bc9",
+      "version": 3,
+      "token0": {
+        "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      "token1": {
+        "id": "0xd291e7a03283640fdc51b121ac401383a46cc623",
+        "symbol": "RGT",
+        "decimals": 18
+      },
+      "feeTierBps": 3000,
+      "tickSpacing": 60,
+      "createdAtTimestamp": "1624241220"
+    },
+    {
+      "id": "0xa6da2376d488887965f710f13900bd655ba1ca3b",
+      "version": 3,
+      "token0": {
+        "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      "token1": {
+        "id": "0xc08713c04760c4931dec33805962b96fc48a2371",
+        "symbol": "PBC",
+        "decimals": 0
+      },
+      "feeTierBps": 10000,
+      "tickSpacing": 200,
+      "createdAtTimestamp": "1624153177"
+    },
+    {
+      "id": "0xec13130ddc44d7f330b637abc315710afcbe4049",
+      "version": 3,
+      "token0": {
+        "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "symbol": "USDC",
+        "decimals": 6
+      },
+      "token1": {
+        "id": "0xebd9d99a3982d547c5bb4db7e3b1f9f14b67eb83",
+        "symbol": "ID",
+        "decimals": 18
+      },
+      "feeTierBps": 3000,
+      "tickSpacing": 60,
+      "createdAtTimestamp": "1624238514"
+    }
+  ]
+}

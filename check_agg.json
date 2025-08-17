@@ -1,0 +1,1 @@
+{"query":"{ _meta { block { number } } poolDayDatas(first: 5, orderBy: date, orderDirection: desc) { id date pool { id } __typename } poolHourDatas(first: 5, orderBy: hourStartUnix, orderDirection: desc) { id hourStartUnix pool { id } __typename } }"}

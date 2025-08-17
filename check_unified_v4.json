@@ -1,0 +1,1 @@
+{"query":"{ _meta { block { number } hasIndexingErrors } pools(first: 3, where: {version: 4}, orderBy: createdAtTimestamp, orderDirection: desc) { id createdAtTimestamp token0 { id symbol } token1 { id symbol } feeTierBps tickSpacing } }"}

@@ -1,7 +1,7 @@
 # Uniswap LP Analytics — STATUS
 
 ## Data source
-- The Graph Studio subgraph: unified (v3 + v4). Endpoint kept in `.env` as GRAPH_V3_ENDPOINT.
+- The Graph Studio subgraph: unified (v3 + v4). Endpoint kept in `.env` as GRAPH_ENDPOINT.
 
 ## DB schema
 - Tables: tokens, pools, pool_day_data, pool_hour_data, pool_price_hour

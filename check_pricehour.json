@@ -1,0 +1,1 @@
+{"query":"{ poolPriceHours(first: 3, orderBy: hourStartUnix, orderDirection: desc) { id hourStartUnix pool { id } sqrtPriceX96 price0 price1 liquidity updatedAt } }"}

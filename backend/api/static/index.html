@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Uniswap LP Analytics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 20px; }
+    h1 { margin: 0 0 8px; }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px; }
+    label { display: block; font-size: 12px; color: #444; margin-bottom: 6px; }
+    input, select, button { width: 100%; padding: 8px; font-size: 14px; }
+    button { cursor: pointer; }
+    .actions { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { border: 1px solid #e5e7eb; padding: 8px; font-size: 13px; }
+    th { background: #f9fafb; text-align: left; }
+    .section { margin-top: 24px; }
+    .muted { color: #666; font-size: 12px; }
+    .chip { display:inline-block; padding:2px 6px; border-radius:999px; background:#eef2ff; color:#3730a3; font-size:12px }
+    .error { color: #b91c1c; white-space: pre-wrap; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; }
+    .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; }
+    .modal .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; max-width: 900px; width: 95%; max-height: 85vh; overflow: auto; padding: 16px; }
+    .modal .header { display:flex; justify-content: space-between; align-items:center; margin-bottom: 10px; }
+    .modal .header h3 { margin:0; }
+  </style>
+</head>
+<body>
+  <h1>Uniswap LP Analytics</h1>
+
+  <div class="row">
+    <div>
+      <label>Version</label>
+      <select id="version">
+        <option value="">all</option>
+        <option value="3">v3</option>
+        <option value="4">v4</option>
+      </select>
+    </div>
+    <div>
+      <label>Window</label>
+      <select id="window">
+        <option value="day">day</option>
+        <option value="hour">hour</option>
+      </select>
+    </div>
+    <div>
+      <label>Side (for volume)</label>
+      <select id="side">
+        <option value="both">both</option>
+        <option value="token0">token0</option>
+        <option value="token1">token1</option>
+      </select>
+    </div>
+    <div>
+      <label>Lookback</label>
+      <input id="lookback" type="number" value="30" min="1" />
+    </div>
+    <div>
+      <label>Token symbol filter</label>
+      <input id="token_symbol" type="text" placeholder="e.g. WETH" />
+    </div>
+    <div>
+      <label>Min fee bps</label>
+      <input id="fee_min" type="number" placeholder="e.g. 500" />
+    </div>
+    <div>
+      <label>Max fee bps</label>
+      <input id="fee_max" type="number" placeholder="e.g. 3000" />
+    </div>
+    <div>
+      <label>Limit</label>
+      <input id="limit" type="number" value="10" min="1" max="100" />
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="btnFees">Load Top Fees</button>
+    <button id="btnVolume">Load Top Volume</button>
+    <a id="csvFees" class="chip" href="#" target="_blank">Download fees CSV</a>
+    <a id="csvVolume" class="chip" href="#" target="_blank">Download volume CSV</a>
+    <a id="share" class="chip" href="#">Share current view</a>
+  </div>
+
+  <div class="muted">Hint: lookback is days for day window or hours for hour window.</div>
+  <div id="err" class="error"></div>
+
+  <div class="section">
+    <h2>Top Fees</h2>
+    <table id="tblFees">
+      <thead>
+        <tr>
+          <th>#</th><th>Pool</th><th>Tokens</th><th>Fee bps</th><th>Tick</th><th>Created</th><th>Fees Sum</th><th>Window</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Top Volume</h2>
+    <table id="tblVol">
+      <thead>
+        <tr>
+          <th>#</th><th>Pool</th><th>Tokens</th><th>Fee bps</th><th>Tick</th><th>Created</th><th>Volume Sum</th><th>Swaps</th><th>Window</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="modal-backdrop" id="mb"></div>
+  <div class="modal" id="md">
+    <div class="panel">
+      <div class="header">
+        <h3 id="md_title"></h3>
+        <div>
+          <a id="md_csv" class="chip" target="_blank">Download CSV</a>
+          <button id="md_close">Close</button>
+        </div>
+      </div>
+      <div id="md_body"></div>
+    </div>
+  </div>
+
+<script>
+function qs(id){ return document.getElementById(id); }
+function val(id){ const v = qs(id).value.trim(); return v === "" ? null : v; }
+function num(v){ return v == null || v === "" ? null : Number(v); }
+function fmtNum(n){ try { return Number(n).toLocaleString(); } catch { return n; } }
+function z(dt){ return new Date((dt||0)*1000).toISOString().slice(0,19).replace('T',' '); }
+
+function buildParams(extra){
+  const p = new URLSearchParams();
+  const v = val("version"); if (v) p.set("version", v);
+  const w = val("window") || "day"; p.set("window", w);
+  const side = val("side") || "both"; p.set("side", side);
+  const lookback = num(val("lookback")) || 30; p.set("lookback", String(lookback));
+  const ts = val("token_symbol"); if (ts) p.set("token_symbol", ts);
+  const fmin = val("fee_min"); if (fmin) p.set("fee_min", fmin);
+  const fmax = val("fee_max"); if (fmax) p.set("fee_max", fmax);
+  const limit = num(val("limit")) || 10; p.set("limit", String(limit));
+  Object.entries(extra||{}).forEach(([k,v])=>p.set(k, v));
+  return { p, w };
+}
+
+function poolLine(p){
+  const a = p.id;
+  const t0 = p.token0.symbol || p.token0.address.slice(0,6);
+  const t1 = p.token1.symbol || p.token1.address.slice(0,6);
+  return { id: a, tokens: `${t0}/${t1}` };
+}
+
+async function fetchJSON(url){
+  try{
+    const r = await fetch(url, { headers: { "Accept": "application/json" } });
+    const txt = await r.text();
+    if(!r.ok){
+      qs("err").textContent = `HTTP ${r.status} on ${url}\n${txt.slice(0,400)}`;
+      return null;
+    }
+    let data;
+    try { data = JSON.parse(txt); }
+    catch(e){ qs("err").textContent = `Non-JSON response from ${url}\n${txt.slice(0,400)}`; return null; }
+    return data;
+  }catch(e){
+    qs("err").textContent = `Fetch error for ${url}\n${e}`;
+    return null;
+  }
+}
+
+async function loadFees(){
+  qs("err").textContent = "";
+  const { p, w } = buildParams();
+  const url = `/pools/top_fees?${p.toString()}`;
+  const data = await fetchJSON(url);
+  if(!data) return;
+  const tb = qs("tblFees").querySelector("tbody");
+  tb.innerHTML = "";
+  data.items.forEach((it, i) => {
+    const pl = poolLine(it.pool);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td><code>${pl.id}</code></td>
+      <td>${pl.tokens}</td>
+      <td>${it.pool.fee_tier_bps}</td>
+      <td>${it.pool.tick_spacing}</td>
+      <td>${z(it.pool.created_at_ts)}</td>
+      <td>${fmtNum(it.fees_sum)}</td>
+      <td>${w}</td>
+      <td><button data-pool="${pl.id}">Details</button></td>
+    `;
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('button[data-pool]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openDetails(btn.getAttribute('data-pool')));
+  });
+  const csv = new URLSearchParams(p);
+  qs("csvFees").href = `/export/top_fees.csv?${csv.toString()}`;
+}
+
+async function loadVolume(){
+  qs("err").textContent = "";
+  const { p, w } = buildParams();
+  const url = `/pools/top_volume?${p.toString()}`;
+  const data = await fetchJSON(url);
+  if(!data) return;
+  const tb = qs("tblVol").querySelector("tbody");
+  tb.innerHTML = "";
+  data.items.forEach((it, i) => {
+    const pl = poolLine(it.pool);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td><code>${pl.id}</code></td>
+      <td>${pl.tokens}</td>
+      <td>${it.pool.fee_tier_bps}</td>
+      <td>${it.pool.tick_spacing}</td>
+      <td>${z(it.pool.created_at_ts)}</td>
+      <td>${fmtNum(it.volume_sum)}</td>
+      <td>${fmtNum(it.swaps_sum)}</td>
+      <td>${w}</td>
+      <td><button data-pool="${pl.id}">Details</button></td>
+    `;
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('button[data-pool]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openDetails(btn.getAttribute('data-pool')));
+  });
+  const csv = new URLSearchParams(p);
+  qs("csvVolume").href = `/export/top_volume.csv?${csv.toString()}`;
+}
+
+function applyURL(){
+  const sp = new URLSearchParams(location.search);
+  const m = (id) => { if (sp.has(id)) { qs(id).value = sp.get(id); } };
+  ["version","window","side","lookback","token_symbol","fee_min","fee_max","limit"].forEach(m);
+}
+
+function updateShare(){
+  const { p } = buildParams();
+  const url = `${location.origin}${location.pathname}?${p.toString()}`;
+  qs("share").href = url;
+  if (navigator.clipboard) navigator.clipboard.writeText(url).catch(()=>{});
+}
+
+function showModal(){ qs("mb").style.display="block"; qs("md").style.display="flex"; }
+function hideModal(){ qs("mb").style.display="none"; qs("md").style.display="none"; }
+qs("md_close").addEventListener("click", hideModal);
+qs("mb").addEventListener("click", hideModal);
+
+async function openDetails(poolId){
+  const w = val("window") || "day";
+  const url = `/pools/${poolId}/agg?window=${encodeURIComponent(w)}&since_${w==="day"?"day":"hour"}_id=0&limit=30`;
+  const j = await fetchJSON(url);
+  if(!j) return;
+  qs("md_title").textContent = `${j.pool.token0.symbol||j.pool.token0.address.slice(0,6)}/${j.pool.token1.symbol||j.pool.token1.address.slice(0,6)} · ${poolId}`;
+  qs("md_csv").href = `/export/pool_agg.csv?pool_id=${encodeURIComponent(poolId)}&window=${encodeURIComponent(w)}&since_${w==="day"?"day":"hour"}_id=0&limit=1000`;
+  const rows = j.rows || [];
+  let html = `
+    <table><thead>
+      <tr><th>${w==="day"?"dayId":"hourId"}</th><th>volume_token0</th><th>volume_token1</th><th>approx_fee_token0</th><th>approx_fee_token1</th><th>swaps</th></tr>
+    </thead><tbody>
+  `;
+  rows.forEach(r=>{
+    html += `<tr><td>${r.bucket}</td><td>${fmtNum(r.volume_token0)}</td><td>${fmtNum(r.volume_token1)}</td><td>${fmtNum(r.approx_fee_token0)}</td><td>${fmtNum(r.approx_fee_token1)}</td><td>${fmtNum(r.swap_count)}</td></tr>`;
+  });
+  html += `</tbody></table>`;
+  qs("md_body").innerHTML = html;
+  showModal();
+}
+
+document.getElementById("btnFees").addEventListener("click", () => { loadFees(); updateShare(); });
+document.getElementById("btnVolume").addEventListener("click", () => { loadVolume(); updateShare(); });
+document.getElementById("share").addEventListener("click", (e) => { e.preventDefault(); updateShare(); window.history.replaceState({}, "", qs("share").href); });
+
+window.addEventListener("load", () => { applyURL(); loadFees(); loadVolume(); updateShare(); });
+</script>
+</body>
+</html>
