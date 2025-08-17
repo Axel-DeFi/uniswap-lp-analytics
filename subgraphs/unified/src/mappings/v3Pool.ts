@@ -11,8 +11,7 @@ function isStable(addr: string): boolean {
 }
 function safeBalanceOf(tokenAddr: string, owner: Address): BigInt {
   const erc = ERC20.bind(Address.fromString(tokenAddr));
-  const res = erc.try_balanceOf(owner);
-  return res.reverted ? BigInt.zero() : res.value;
+  return erc.balanceOf(owner);
 }
 
 function exponentToBigDecimal(decimals: i32): BigDecimal {
@@ -129,11 +128,6 @@ export function handleSwap(event: Swap): void {
   hour.volumeToken1 = hour.volumeToken1.plus(v1.div(d1));
   hour.swapCount = hour.swapCount + 1;
   hour.save();
-
-  const prices = pricesFromSqrt(event.params.sqrtPriceX96, t0.decimals, t1.decimals);
-  const p0 = prices[0];
-  const p1 = prices[1];
-
   let ph = ensurePriceHour(poolId, event.block.timestamp);
   ph.sqrtPriceX96 = event.params.sqrtPriceX96;
   ph.price0 = p0;
@@ -141,9 +135,6 @@ export function handleSwap(event: Swap): void {
   ph.liquidity = event.params.liquidity;
   ph.updatedAt = event.block.timestamp.toI32();
   ph.save();
-const prices = pricesFromSqrt(event.params.sqrtPriceX96, t0.decimals, t1.decimals);
-const p0 = prices[0];
-const p1 = prices[1];
 const poolAddr = event.address;
 const bal0Raw = safeBalanceOf(pool.token0, poolAddr);
 const bal1Raw = safeBalanceOf(pool.token1, poolAddr);
