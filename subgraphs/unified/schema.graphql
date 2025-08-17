@@ -45,3 +45,15 @@ type PoolHourData @entity(immutable: false) {
   feesUSD: BigDecimal!          # placeholder (0 for now)
   tvlUSD: BigDecimal!           # placeholder (0 for now)
 }
+
+# Hourly price snapshot per pool (V3), updated on each Swap.
+type PoolPriceHour @entity(immutable: false) {
+  id: ID!                # "<poolId>-<hourId>"
+  pool: Pool!
+  hourStartUnix: Int!
+  sqrtPriceX96: BigInt!
+  price0: BigDecimal!    # token1 per 1 token0 (decimals-adjusted)
+  price1: BigDecimal!    # token0 per 1 token1 (decimals-adjusted)
+  liquidity: BigInt!     # liquidity after swap (from event)
+  updatedAt: Int!        # block timestamp of last swap in this hour
+}
