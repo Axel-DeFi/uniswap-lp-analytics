@@ -1,6 +1,19 @@
 import { Address, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
 import { Swap } from "../../generated/templates/UniswapV3Pool/UniswapV3Pool";
+import { ERC20 } from "../../generated/UniswapV3Factory/ERC20";
 import { Pool, Token, PoolDayData, PoolHourData, PoolPriceHour } from "../../generated/schema";
+
+const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7";
+function isStable(addr: string): boolean {
+  const a = addr.toLowerCase();
+  return a == USDC || a == USDT;
+}
+function safeBalanceOf(tokenAddr: string, owner: Address): BigInt {
+  const erc = ERC20.bind(Address.fromString(tokenAddr));
+  const res = erc.try_balanceOf(owner);
+  return res.reverted ? BigInt.zero() : res.value;
+}
 
 function exponentToBigDecimal(decimals: i32): BigDecimal {
   let result = BigDecimal.fromString("1");
@@ -128,4 +141,22 @@ export function handleSwap(event: Swap): void {
   ph.liquidity = event.params.liquidity;
   ph.updatedAt = event.block.timestamp.toI32();
   ph.save();
+const prices = pricesFromSqrt(event.params.sqrtPriceX96, t0.decimals, t1.decimals);
+const p0 = prices[0];
+const p1 = prices[1];
+const poolAddr = event.address;
+const bal0Raw = safeBalanceOf(pool.token0, poolAddr);
+const bal1Raw = safeBalanceOf(pool.token1, poolAddr);
+const amt0 = bal0Raw.toBigDecimal().div(exponentToBigDecimal(t0.decimals));
+const amt1 = bal1Raw.toBigDecimal().div(exponentToBigDecimal(t1.decimals));
+let tvlUSD = BigDecimal.fromString("0");
+if (isStable(pool.token0) && !isStable(pool.token1)) {
+  tvlUSD = amt0.plus(amt1.times(p1));
+} else if (isStable(pool.token1) && !isStable(pool.token0)) {
+  tvlUSD = amt1.plus(amt0.times(p0));
+}
+day.tvlUSD = tvlUSD;
+day.save();
+hour.tvlUSD = tvlUSD;
+hour.save();
 }
