@@ -130,7 +130,10 @@ export function handleSwap(event: Swap): void {
   hour.save();
   let ph = ensurePriceHour(poolId, event.block.timestamp);
   ph.sqrtPriceX96 = event.params.sqrtPriceX96;
-  ph.price0 = p0;
+  const prices = pricesFromSqrt(event.params.sqrtPriceX96, t0.decimals, t1.decimals);
+const p0 = prices[0];
+const p1 = prices[1];
+ph.price0 = p0;
   ph.price1 = p1;
   ph.liquidity = event.params.liquidity;
   ph.updatedAt = event.block.timestamp.toI32();
