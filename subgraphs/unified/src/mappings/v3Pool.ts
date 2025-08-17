@@ -49,7 +49,7 @@ function ensurePoolHourData(poolId: string, ts: BigInt): PoolHourData {
   if (p == null) {
     p = new PoolHourData(id);
     p.pool = poolId;
-    p.hourStartUnix = hourId(ts);
+    p.periodStartUnix = hourId(ts);
     p.volumeToken0 = BigDecimal.fromString("0");
     p.volumeToken1 = BigDecimal.fromString("0");
     p.swapCount = 0;
@@ -66,7 +66,7 @@ function ensurePriceHour(poolId: string, ts: BigInt): PoolPriceHour {
   if (ph == null) {
     ph = new PoolPriceHour(id);
     ph.pool = poolId;
-    ph.hourStartUnix = hourId(ts);
+    ph.periodStartUnix = hourId(ts);
     ph.sqrtPriceX96 = BigInt.zero();
     ph.price0 = BigDecimal.fromString("0");
     ph.price1 = BigDecimal.fromString("0");

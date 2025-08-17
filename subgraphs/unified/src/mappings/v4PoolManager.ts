@@ -51,7 +51,7 @@ function ensurePoolHourData(poolId: string, ts: BigInt): void {
   if (phd == null) {
     phd = new PoolHourData(id);
     phd.pool = poolId;
-    phd.hourStartUnix = hourId;
+    phd.periodStartUnix = hourId;
     phd.volumeToken0 = BigDecimal.fromString("0");
     phd.volumeToken1 = BigDecimal.fromString("0");
     phd.swapCount = 0;

@@ -37,7 +37,7 @@ type PoolDayData @entity(immutable: false) {
 type PoolHourData @entity(immutable: false) {
   id: ID!                       # "<poolId>-<hourId>"
   pool: Pool!
-  hourStartUnix: Int!           # hourId = timestamp / 3600 (UTC)
+  periodStartUnix: Int!           # hourId = timestamp / 3600 (UTC)
   volumeToken0: BigDecimal!
   volumeToken1: BigDecimal!
   swapCount: Int!
@@ -50,7 +50,7 @@ type PoolHourData @entity(immutable: false) {
 type PoolPriceHour @entity(immutable: false) {
   id: ID!                # "<poolId>-<hourId>"
   pool: Pool!
-  hourStartUnix: Int!
+  periodStartUnix: Int!
   sqrtPriceX96: BigInt!
   price0: BigDecimal!    # token1 per 1 token0 (decimals-adjusted)
   price1: BigDecimal!    # token0 per 1 token1 (decimals-adjusted)

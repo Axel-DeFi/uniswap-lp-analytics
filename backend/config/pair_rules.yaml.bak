@@ -1,0 +1,7 @@
+rules:
+  - chain_id: 1
+    versions: [3, 4]
+    mode: cartesian
+    base:  [WBTC, TBTC, CBBTC, WETH]
+    quote: [USDC, USDT]
+    unique_by: [token0, token1, fee_tier]

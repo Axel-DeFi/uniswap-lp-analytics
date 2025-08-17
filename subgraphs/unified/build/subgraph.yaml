@@ -72,6 +72,8 @@ templates:
       abis:
         - name: UniswapV3Pool
           file: UniswapV3Pool/UniswapV3Pool.json
+        - name: ERC20
+          file: UniswapV3Pool/ERC20.json
       eventHandlers:
         - event: Swap(indexed address,indexed address,int256,int256,uint160,uint128,int24)
           handler: handleSwap

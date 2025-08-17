@@ -456,8 +456,8 @@ export class PoolHourData extends Entity {
     this.set("pool", Value.fromString(value));
   }
 
-  get hourStartUnix(): i32 {
-    let value = this.get("hourStartUnix");
+  get periodStartUnix(): i32 {
+    let value = this.get("periodStartUnix");
     if (!value || value.kind == ValueKind.NULL) {
       return 0;
     } else {
@@ -465,8 +465,8 @@ export class PoolHourData extends Entity {
     }
   }
 
-  set hourStartUnix(value: i32) {
-    this.set("hourStartUnix", Value.fromI32(value));
+  set periodStartUnix(value: i32) {
+    this.set("periodStartUnix", Value.fromI32(value));
   }
 
   get volumeToken0(): BigDecimal {
@@ -602,8 +602,8 @@ export class PoolPriceHour extends Entity {
     this.set("pool", Value.fromString(value));
   }
 
-  get hourStartUnix(): i32 {
-    let value = this.get("hourStartUnix");
+  get periodStartUnix(): i32 {
+    let value = this.get("periodStartUnix");
     if (!value || value.kind == ValueKind.NULL) {
       return 0;
     } else {
@@ -611,8 +611,8 @@ export class PoolPriceHour extends Entity {
     }
   }
 
-  set hourStartUnix(value: i32) {
-    this.set("hourStartUnix", Value.fromI32(value));
+  set periodStartUnix(value: i32) {
+    this.set("periodStartUnix", Value.fromI32(value));
   }
 
   get sqrtPriceX96(): BigInt {
