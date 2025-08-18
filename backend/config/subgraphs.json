@@ -1,0 +1,35 @@
+{
+  "mainnet": {
+    "canonical": "mainnet",
+    "chainId": 1,
+    "dataSources": {
+      "v3Factory": {
+        "address": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+        "startBlock": 12369621
+      },
+      "v4PoolManager": {
+        "address": "0x000000000004444c5dc75cB358380D2e3dE08A90",
+        "startBlock": 21688329
+      }
+    },
+    "graphCliNetwork": "mainnet",
+    "graphNetworkName": "mainnet",
+    "slug": "uniswap-lp-analytics-mainnet"
+  },
+  "optimism": {
+    "chainId": 10,
+    "dataSources": {
+      "v3Factory": {
+        "address": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+        "startBlock": 0
+      },
+      "v4PoolManager": {
+        "address": "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3",
+        "startBlock": 130947675
+      }
+    },
+    "graphCliNetwork": "optimism",
+    "graphNetworkName": "optimism",
+    "slug": "uniswap-lp-analytics-optimism"
+  }
+}
