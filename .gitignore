@@ -3,17 +3,25 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .venv/
+
+# Env (local only)
 .env
+*.env
+
 # Node / The Graph
+subgraphs/unified/node_modules/
+subgraphs/unified/build/
+subgraphs/unified/generated/
 node_modules/
 dist/
 .cache/
+
+# Temp outputs
+backend/ingestion/output/
+
+# Logs
+backend/api/uvicorn.log
+
 # OS / IDE
 .DS_Store
 .vscode/
-
-.env
-*.env
-
-.env
-*.env
